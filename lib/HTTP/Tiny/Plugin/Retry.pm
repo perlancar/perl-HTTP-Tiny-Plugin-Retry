@@ -23,7 +23,7 @@ sub after_request {
     return 0 if $r->{config}{max_attempts} &&
         $r->{retries} >= $r->{config}{max_attempts};
     $r->{retries}++;
-    my ($ht, $method, $url, $options) = @{ $r->{argv} };
+    my ($http, $method, $url, $options) = @{ $r->{argv} };
     log_trace "Failed requesting %s (%s - %s), retrying in %.1f second(s) (%d of %d) ...",
         $url,
         $r->{response}{status},
