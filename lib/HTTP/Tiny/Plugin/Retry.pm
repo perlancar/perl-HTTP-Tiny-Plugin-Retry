@@ -20,7 +20,21 @@ sub after_request {
     $r->{config}{delay}        //=
         $ENV{HTTP_TINY_PLUGIN_RETRY_DELAY}        // 2;
 
-    return -1 if $r->{response}{status} !~ /\A[5]/;
+    if (defined $r->{config}{retry_if}) {
+        my $ref = ref $r->{config}{retry_if};
+        if ($ref eq 'Regexp' or !$ref) {
+            return -1 unless $r->{response}{status} =~ $r->{config}{retry_if};
+        } elsif ($ref eq 'ARRAY') {
+            return -1 unless grep { $_ == $r->{response}{status} } @{ $r->{config}{retry_if} };
+        } elsif ($ref eq 'CODE') {
+            return -1 unless $r->{config}{retry_if}->($self, $r);
+        } else {
+            die "Please supply a scalar/Regexp/arrayref/coderef retry_if";
+        }
+    } else {
+        return -1 if $r->{response}{status} !~ /\A[5]/;
+    }
+
     $r->{retries} //= 0;
     return 0 if $r->{config}{max_attempts} &&
         $r->{retries} >= $r->{config}{max_attempts};
@@ -72,8 +86,10 @@ Float.
 
 =head2 retry_if
 
-Regex or code. If regex, then will be matched against response status. If code,
-will be called with arguments: C<< ($self, $response) >>.
+Regex (or scalra), or arrayref, or coderef. If regex or scalar, then will be
+matched against response status. If array, then will be assumed to be status
+codes to trigger retry. If coderef, will be called with arguments: C<< ($self,
+$response) >> and a true return value will trigger retry.
 
 
 =head1 ENVIRONMENT
