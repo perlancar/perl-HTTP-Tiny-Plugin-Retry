@@ -68,7 +68,7 @@ sub after_request {
         $should_give_up++ if $r->{config}{max_attempts} &&
             $r->{retries} >= $r->{config}{max_attempts};
         $max_attempts = $r->{config}{max_attempts};
-        $delay = $r->{config}{delay},
+        $delay = $r->{config}{delay};
     }
 
     my ($http, $method, $url, $options) = @{ $r->{argv} };
