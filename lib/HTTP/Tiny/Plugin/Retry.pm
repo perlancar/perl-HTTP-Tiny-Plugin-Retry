@@ -1,6 +1,8 @@
 package HTTP::Tiny::Plugin::Retry;
 
+# AUTHORITY
 # DATE
+# DIST
 # VERSION
 
 use 5.010001;
@@ -88,3 +90,9 @@ Int.
 =head1 SEE ALSO
 
 L<HTTP::Tiny::Plugin>
+
+L<HTTP::Tiny::Plugin::CustomRetry> uses L<Algorithm::Backoff> to give you
+several retry delay strategies.
+
+Equivalent plugin for L<LWP::UserAgent::Plugin>:
+L<LWP::UserAgent::Plugin::Retry>.
