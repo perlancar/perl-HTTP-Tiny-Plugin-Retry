@@ -16,7 +16,7 @@ sub after_request {
     my ($class, $r) = @_;
 
     $r->{config}{max_attempts} //=
-        $ENV{HTTP_TINY_PLUGIN_RETRY_MAX_ATTEMPTS} // 3;
+        $ENV{HTTP_TINY_PLUGIN_RETRY_MAX_ATTEMPTS} // 4;
     $r->{config}{delay}        //=
         $ENV{HTTP_TINY_PLUGIN_RETRY_DELAY}        // 2;
     if (defined $r->{config}{strategy}) {
@@ -66,7 +66,7 @@ sub after_request {
         $max_attempts = $r->{http}{_backoff_obj}{max_attempts};
     } else {
         $should_give_up++ if $r->{config}{max_attempts} &&
-            $r->{retries} >= $r->{config}{max_attempts};
+            1+$r->{retries} >= $r->{config}{max_attempts};
         $max_attempts = $r->{config}{max_attempts};
         $delay = $r->{config}{delay};
     }
@@ -124,7 +124,7 @@ L</retry_if>).
 
 =head2 max_attempts
 
-Int.
+Int. Default 4.
 
 =head2 delay
 
